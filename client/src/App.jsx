@@ -7,6 +7,7 @@ import {
   Route,
   NavLink,
 } from "react-router-dom";
+import Greeter from "./components/Greeter";
 
 function App() {
   return (
@@ -38,6 +39,12 @@ function App() {
                 Buy me coffee
               </NavLink>
 
+              <NavLink
+                to="/greeter"
+                className={({ isActive }) => isActive ? 'nav-item nav-link active' : 'nav-item nav-link '}>
+                Greeter
+              </NavLink>
+
             </div>
           </div>
         </nav>
@@ -46,6 +53,7 @@ function App() {
             <Route exact path="/" element={<Home />} />
             <Route path="/simple-greeter" element={<SimpleGreeter />} />
             <Route path="/buy-coffee" element={<CoffeePortal />} />
+            <Route path="/greeter" element={<Greeter />} />
           </Routes>
         </div>
       </Router>

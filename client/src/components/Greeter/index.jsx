@@ -1,29 +1,42 @@
 import React, { useState, useEffect } from 'react';
+import useEth from "../../contexts/EthContext/useEth";
 
 export default function Greeter() {
 
     const [submitting, setSubmitting] = useState(false)
     const [name, setName] = useState('')
     const [currentFriend, setCurrentFriend] = useState('')
+    const { state: { contract, accounts } } = useEth();
 
     useEffect(() => {
-        retrieveFriend()
-    }, [])
+        if (contract) {
+            retrieveFriend()
+        }
+    }, [contract])
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
+
         event.preventDefault();
         setSubmitting(true)
 
-        setTimeout(() => {
-            setCurrentFriend(name)
-            localStorage.setItem('currentFriend', name)
+        try {
+            const transaction = await contract
+                .methods
+                .newGreeting(name)
+                .send({ from: accounts[0] })
+
+            console.log("Mining...", transaction);
             setSubmitting(false)
-        }, 1000)
+            await retrieveFriend()
+        } catch (e) {
+
+        }
+
     }
 
-    const retrieveFriend = () => {
-       const _currentFriend = localStorage.getItem('currentFriend');
-       setCurrentFriend(_currentFriend)
+    const retrieveFriend = async () => {
+        const _currentFriend = await contract.methods.greet().call()
+        setCurrentFriend(_currentFriend)
     }
 
     const handleNameChange = (event) => {
@@ -32,7 +45,7 @@ export default function Greeter() {
 
     return (
         <div className="container">
-            <h1>Hello my friend - simple one</h1>
+            <h1>Hello my friend - real one</h1>
 
             {submitting &&
                 <div>Submtting Form...</div>
